@@ -49,7 +49,6 @@ econova-greenlens/
 │   └── .env                  # Environment secrets configuration (Excluded from git)
 │
 ├── .gitignore                # Global ignore rules for clean repository uploads
-├── QUICK_START_GUIDE.md      # Step-by-step scanner setup and walkthrough
 └── README.md                 # Project root documentation (this file)
 ```
 
