@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  password      String?
+  image         String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  scans         ScanHistory[]
+  savedItems    SavedAlternative[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id                String    @id @default(cuid())
+  name              String
+  description       String?
+  imageUrl          String?
+  materialType      String?
+  reusabilityScore  Float     // 0-10
+  biodegradability  Float     // 0-10
+  carbonImpact      Float     // 0-10 (lower carbon impact means higher score)
+  sustainabilityScore Float   @default(0) // S = R + B + C
+  estimatedCost     Float     @default(0.0)
+  
+  categoryId        String
+  category          Category  @relation(fields: [categoryId], references: [id])
+
+  isEcoAlternative  Boolean   @default(false)
+  parentProductId   String?   // If this is an alternative, what is the base product?
+  parentProduct     Product?  @relation("ProductAlternatives", fields: [parentProductId], references: [id])
+  alternatives      Product[] @relation("ProductAlternatives")
+
+  scanHistories     ScanHistory[]
+  savedByUsers      SavedAlternative[]
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model ScanHistory {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId         String?
+  product           Product?  @relation(fields: [productId], references: [id])
+  scannedImage      String?
+  rawAiResponse     String?   // The full response from Gemini
+  
+  // Snapshot of scores at the time of scan
+  calculatedScore   Float?
+  
+  createdAt         DateTime  @default(now())
+}
+
+model SavedAlternative {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId         String
+  product           Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  notes             String?
+  createdAt         DateTime  @default(now())
+
+  @@unique([userId, productId])
+}

@@ -1,0 +1,23 @@
+{
+  "name": "EcoNova GreenLens",
+  "short_name": "GreenLens",
+  "description": "AI-powered sustainability scanner and eco-friendly recommendation platform.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1f14",
+  "theme_color": "#0d1f14",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
